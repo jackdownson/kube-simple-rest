@@ -1,0 +1,46 @@
+kubectl apply -f pod.yaml
+sudo docker build -t rest-app .
+sudo lsof -i -P -n | grep LISTEN
+kubectl delete deploy health-app-deployment --namespace=
+kubectl port-forward pod/rest-app 8000:8000 --namespace=
+
+# push to docker hub
+docker tag rest-app nikishqua/rest-app
+sudo docker push nikishqua/rest-app:0.0.2
+
+
+#https://kubernetes.io/ru/docs/tasks/configure-pod-container/_print/
+apiVersion: v1
+kind: Pod
+metadata:
+  name: goproxy
+  labels:
+    app: goproxy
+spec:
+  containers:
+  - name: goproxy
+    image: k8s.gcr.io/goproxy:0.1
+    ports:
+    - containerPort: 8080
+    readinessProbe:
+      tcpSocket:
+        port: 8080
+      initialDelaySeconds: 5
+      periodSeconds: 10
+    livenessProbe:
+      tcpSocket:
+        port: 8080
+      initialDelaySeconds: 15
+      periodSeconds: 20
+
+
+# dashboard
+
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.5.0/aio/deploy/recommended.yaml
+kubectl apply -f  https://raw.githubusercontent.com/ReDestroyDeR/Terraform-Kubernetes-Deployment/master/dashboard-cluster-role-binding.yaml
+kubectl apply -f  https://raw.githubusercontent.com/ReDestroyDeR/Terraform-Kubernetes-Deployment/master/dashboard-svc-account.yaml
+kubectl port-forward -n kubernetes-dashboard service/kubernetes-dashboard 8080:443 &
+#!/bin/bash
+printf "$(kubectl -n kubernetes-dashboard get secret $(kubectl -n kubernetes-dashboard get sa/admin-user -o jsonpath="{.secrets[0].name}") -o go-template="{{.data.token | base64decode}}")\n"
+
+

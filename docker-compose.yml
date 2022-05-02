@@ -1,0 +1,9 @@
+version: '3'
+services:
+
+  rest-app:
+    build: .
+    image: "rest-app"
+    ports:
+      - 8000:8000
+    container_name: rest-app-container
