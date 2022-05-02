@@ -1,0 +1,20 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: nikita-ingress
+  namespace: otus
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: arch.homework
+      http:
+        paths:
+          - path: /otusapp/(.*)/(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: nikita-service
+                port:
+                  number: 8080
