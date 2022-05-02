@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: health-app-service
+spec:
+  selector:
+    app: health-app-service
+  ports:
+      - port: 8080
+        targetPort: 8000
+        protocol: TCP

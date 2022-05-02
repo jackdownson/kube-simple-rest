@@ -1,18 +1,27 @@
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: example-ingress
+  name: min-k8s-app-ingress
+  namespace: otus
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /$1
+    nginx.ingress.kubernetes.io/rewrite-target: /$3
 spec:
+  ingressClassName: nginx
   rules:
-    - host: health-app.info
+    - host: arch.homework
       http:
         paths:
-          - path: /
+          - path: /otusapp(/|$)(.*/|$)(.*)
             pathType: Prefix
             backend:
               service:
-                name: health-app-service
+                name: k8s-min-service
+                port:
+                  number: 8000
+          - path: /()()(health)
+            pathType: Exact
+            backend:
+              service:
+                name: k8s-min-service
                 port:
                   number: 8000
